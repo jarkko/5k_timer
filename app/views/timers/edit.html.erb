@@ -1,0 +1,16 @@
+<h1>Editing timer</h1>
+
+<% form_for(@timer) do |f| %>
+  <%= f.error_messages %>
+
+  <p>
+    <%= f.label :start_time %><br />
+    <%= f.text_field :start_time %>
+  </p>
+  <p>
+    <%= f.submit 'Update' %>
+  </p>
+<% end %>
+
+<%= link_to 'Show', @timer %> |
+<%= link_to 'Back', timers_path %>

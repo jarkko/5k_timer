@@ -1,0 +1,13 @@
+<p>
+  <b>First name:</b>
+  <%=h @runner.first_name %>
+</p>
+
+<p>
+  <b>Last name:</b>
+  <%=h @runner.last_name %>
+</p>
+
+
+<%= link_to 'Edit', edit_runner_path(@runner) %> |
+<%= link_to 'Back', runners_path %>

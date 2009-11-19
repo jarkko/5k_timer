@@ -1,0 +1,20 @@
+<h1>Editing runner</h1>
+
+<% form_for(@runner) do |f| %>
+  <%= f.error_messages %>
+
+  <p>
+    <%= f.label :first_name %><br />
+    <%= f.text_field :first_name %>
+  </p>
+  <p>
+    <%= f.label :last_name %><br />
+    <%= f.text_field :last_name %>
+  </p>
+  <p>
+    <%= f.submit 'Update' %>
+  </p>
+<% end %>
+
+<%= link_to 'Show', @runner %> |
+<%= link_to 'Back', runners_path %>
