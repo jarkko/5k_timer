@@ -2,7 +2,11 @@ class ResultsController < ApplicationController
   # GET /results
   # GET /results.xml
   def index
-    @timer = Timer.find(params[:timer_id])
+    if params[:timer_id]
+      @timer = Timer.find(params[:timer_id])
+    else
+      return redirect_to timer_results_path(Timer.last)
+    end
     
     opts = {}
     
@@ -10,12 +14,26 @@ class ResultsController < ApplicationController
       opts[:conditions] = {:id => params[:result_ids]}
     end
     
-    @results = @timer.results.find(:all, opts).select{ |res| res.name.present? }
+    scope = @timer.results
+    
+    if params[:min_id]
+      scope = scope.newer_than(params[:min_id])
+    end
+    
+    @results = scope.find(:all, opts)
 
     respond_to do |format|
       format.html # index.html.erb
       format.xml  { render :xml => @results }
-      format.json { render :json => @results.to_json(:methods => :name)}
+      format.json do
+        if params[:with_names]
+          @results = @results.select{ |res| res.name.present? }
+        end
+        render :json => @results.to_json(:methods => [:name, :bib_number])
+      end
+      format.js do
+        render :partial => @results
+      end
     end
   end
 
@@ -75,9 +93,7 @@ class ResultsController < ApplicationController
 
     respond_to do |format|
       if @result.update_attributes(params[:result])
-        flash[:notice] = 'Result was successfully updated.'
-        format.html { redirect_to(@result) }
-        format.xml  { head :ok }
+        format.js { render :partial => @result }
       else
         format.html { render :action => "edit" }
         format.xml  { render :xml => @result.errors, :status => :unprocessable_entity }

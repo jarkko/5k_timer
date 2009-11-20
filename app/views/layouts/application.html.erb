@@ -206,6 +206,10 @@
         font-size: 18px;
       }
       
+      #results form {
+        display: inline;
+      }
+      
       .button {
         display: block;
         padding: 10px;
@@ -216,9 +220,10 @@
         font-size: 200%;
       }
     </style>
-    <script type="text/javascript" src="javascripts/prototype.js"></script>
-    <script type="text/javascript" src="javascripts/effects.js"></script>
-    <script type="text/javascript" src="javascripts/timer.js"></script>
+    
+    <%= javascript_include_tag 'prototype', 'effects', 'lowpro', :cache => true %>
+    <%= javascript_include_tag 'timer' %>
+    <%= yield :javascript %>
 
   </head>
   <body>

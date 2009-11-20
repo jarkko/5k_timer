@@ -1,20 +1,17 @@
-<h1>Listing results</h1>
-
-<table>
-  <tr>
-    <th>Result</th>
-  </tr>
-
-<% @results.each do |result| %>
-  <tr>
-    <td><%=h result.result %></td>
-    <td><%= link_to 'Show', result %></td>
-    <td><%= link_to 'Edit', edit_result_path(result) %></td>
-    <td><%= link_to 'Destroy', result, :confirm => 'Are you sure?', :method => :delete %></td>
-  </tr>
+<% content_for :javascript do %>
+  <%= javascript_include_tag 'result_edit' %>
 <% end %>
-</table>
 
-<br />
+<div id="content">
+  <h1 id="tagline">
+    rubyconf5k
+  </h1>
+  <div id="timer">
+    Results
+  </div>
 
-<%= link_to 'New result', new_result_path %>
+  <ol id="results">
+    
+  </ol>
+  <div id="list_end"></div>
+</div>

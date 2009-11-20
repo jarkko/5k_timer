@@ -1,0 +1,12 @@
+<li id="result_<%= result.id %>">
+  <%=h result.formatted_time %>
+  
+  <% form_style = result.name ? "display:none;" : "" %>
+  
+  <% form_for(result, :html => {:style => form_style }) do |f| %>
+    <%= f.text_field :bib_number, :size => 3, :id => "result_#{result.id}_bib_number" %>
+  <% end %>
+    
+  <span class="bib_number"><%=h result.bib_number %></span>
+  <%=h result.name %>
+</li>

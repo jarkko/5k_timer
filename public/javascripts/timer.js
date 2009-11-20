@@ -1,3 +1,31 @@
+function pad(str) {
+  if (str.toString) str = str.toString();
+  if (str.length < 2) {          
+    (2 - str.length).times(function() {
+      str = "0" + str;
+    });
+  }
+  return str;
+}
+
+function parseTime(time_diff, parts) {
+  var hrs = parseInt(time_diff / (1000 * 60 * 60)),
+      left = time_diff % (1000 * 60 * 60);
+
+  var mins = parseInt(left / (1000 * 60)),
+      left = left % (1000 * 60);
+
+  var secs = parseInt(left / 1000);
+  var res = [hrs, mins, secs].map(pad).join(":");
+  
+  if (typeof parts != "undefined") {
+    var parts = left % 1000
+    res = res + "." + pad(parseInt(parts / 10));
+  }
+  
+  return res;
+}
+
 var Timer = Class.create({
   initialize : function(element, id) {
     this.element = $(element);
@@ -7,33 +35,7 @@ var Timer = Class.create({
   updateTime : function() {
     var cur = new Date().getTime();
     this.element.innerHTML = '';
-    this.element.update(this.parseTime(this.getTimeDiff(cur)));
-  },
-  parseTime : function(time_diff, parts) {
-    var hrs = parseInt(time_diff / (1000 * 60 * 60)),
-        left = time_diff % (1000 * 60 * 60);
-
-    var mins = parseInt(left / (1000 * 60)),
-        left = left % (1000 * 60);
-
-    var secs = parseInt(left / 1000);
-    var res = [hrs, mins, secs].map(this.pad).join(":");
-    
-    if (typeof parts != "undefined") {
-      var parts = left % 1000
-      res = res + "." + this.pad(parseInt(parts / 10));
-    }
-    
-    return res;
-  },
-  pad : function(str) {
-    if (str.toString) str = str.toString();
-    if (str.length < 2) {          
-      (2 - str.length).times(function() {
-        str = "0" + str;
-      });
-    }
-    return str;
+    this.element.update(parseTime(this.getTimeDiff(cur)));
   },
   getTimeDiff : function(cur) {
     return cur - this.start_time;
@@ -97,7 +99,7 @@ var Timer = Class.create({
   //  }.bind(this));
   //},
   listElement : function(str) {
-    return new Element('li').update(this.parseTime(str, true));
+    return new Element('li').update(parseTime(str, true));
   },
   updateNames : function() {
     console.log("starting updateNames");
@@ -121,7 +123,7 @@ var Timer = Class.create({
     new Ajax.Request('/timers/' + this.timer_id + '/results.json', {
       onSuccess: this.onSuccess.bind(this),
       method : 'GET',
-      parameters : { 'result_ids[]' : ids }
+      parameters : { 'result_ids[]' : ids, 'with_names' : '1' }
     });
   },
   onSuccess : function(res) {
