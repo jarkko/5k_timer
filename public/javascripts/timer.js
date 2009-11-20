@@ -102,14 +102,14 @@ var Timer = Class.create({
     return new Element('li').update(parseTime(str, true));
   },
   updateNames : function() {
-    console.log("starting updateNames");
+    // console.log("starting updateNames");
     this.nameUpdater = new PeriodicalExecuter(
       this._updateNames.bind(this),
       5
     );
   },
   _updateNames : function() {
-    console.log("updating names");
+    // console.log("updating names");
     var ids = this.results.select(function(e) {
       return e.id && !e.name;
     }).map(function(res) {
@@ -118,7 +118,7 @@ var Timer = Class.create({
         
     if (!this.timer_id || !ids.any()) return;
   
-    console.log("updating name for results " + ids);
+    // console.log("updating name for results " + ids);
   
     new Ajax.Request('/timers/' + this.timer_id + '/results.json', {
       onSuccess: this.onSuccess.bind(this),
@@ -127,28 +127,28 @@ var Timer = Class.create({
     });
   },
   onSuccess : function(res) {
-    console.log("response is " + res.responseJSON);
-    console.log("in onSuccess, this is " + Object.inspect(this));
+    // console.log("response is " + res.responseJSON);
+    // console.log("in onSuccess, this is " + Object.inspect(this));
     res.responseJSON.each(function(result) {
-      console.log("adding name for " + result['result']);
+      // console.log("adding name for " + result['result']);
       var name = result['result']['name'];
       
-      console.log('name is ' + result['result']['name']);
+      // console.log('name is ' + result['result']['name']);
       
       if (name) {
         var id = result['result']['id'];
         
-        console.log("id to update is " + id);
-        console.log("this.results: " + this.results);
+        // console.log("id to update is " + id);
+        // console.log("this.results: " + this.results);
         var curr_result = this.results.find(function(r) {
           return parseInt(r.id) == parseInt(id);
         });
         
-        console.log('curr_result: ' + curr_result);
+        // console.log('curr_result: ' + curr_result);
         
         curr_result['name'] = name;
         
-        console.log("now curr_result " + curr_result.id + " has name " + curr_result.name);
+        // console.log("now curr_result " + curr_result.id + " has name " + curr_result.name);
         
         $('result_' + id).insert({bottom : " " + name}).highlight();
       }
