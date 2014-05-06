@@ -1,0 +1,35 @@
+<script type="text/javascript">
+  document.observe("dom:loaded", function(e) {
+    timer = new Timer('timer', <%= @timer.id %>, '<%= @timer.start_time %>');
+    timer.start()
+    $('start_timer').observe('click', function(e) { this.start(); e.stop(); }.bind(timer));
+    //$('stop_timer').observe('click', function(e) { this.stop(); e.stop(); }.bind(timer));
+    $('reset_timer').observe('click', function(e) { this.reset(); e.stop(); }.bind(timer));
+    $('store_result').observe('click', timer.storeResult.bind(timer));
+    document.observe('keyup', function(e) {
+      if (e.keyCode == "13") { // enter hit
+        this.storeResult();
+        window.location = window.location.pathname + "#list_end";
+      }
+    }.bind(timer))
+  });
+</script>
+
+<div id="sidebar">
+  <a href="#" class="button" id="start_timer">Start timer</a>
+  <a href="#" class="button" id="reset_timer" style="display:none">Reset timer</a> 
+  <a href="#list_end" class="button" id="store_result">Store result</a>
+</div>
+<div id="content">
+  <h1 id="tagline">
+    rubyconf5k
+  </h1>
+  <div id="timer">
+    00:00:00
+  </div>
+  
+  <ol id="results">
+    
+  </ol>
+  <div id="list_end"></div>
+</div>

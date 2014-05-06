@@ -2,7 +2,7 @@
   document.observe("dom:loaded", function(e) {
     timer = new Timer('timer');
     $('start_timer').observe('click', function(e) { this.start(); e.stop(); }.bind(timer));
-    $('stop_timer').observe('click', function(e) { this.stop(); e.stop(); }.bind(timer));
+    //$('stop_timer').observe('click', function(e) { this.stop(); e.stop(); }.bind(timer));
     $('reset_timer').observe('click', function(e) { this.reset(); e.stop(); }.bind(timer));
     $('store_result').observe('click', timer.storeResult.bind(timer));
     document.observe('keyup', function(e) {
@@ -16,7 +16,6 @@
 
 <div id="sidebar">
   <a href="#" class="button" id="start_timer">Start timer</a>
-  <a href="#" class="button" id="stop_timer">Stop timer</a>        
   <a href="#" class="button" id="reset_timer" style="display:none">Reset timer</a> 
   <a href="#list_end" class="button" id="store_result">Store result</a>
 </div>

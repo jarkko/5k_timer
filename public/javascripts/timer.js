@@ -1,6 +1,6 @@
 function pad(str) {
   if (str.toString) str = str.toString();
-  if (str.length < 2) {          
+  if (str.length < 2) {
     (2 - str.length).times(function() {
       str = "0" + str;
     });
@@ -17,20 +17,21 @@ function parseTime(time_diff, parts) {
 
   var secs = parseInt(left / 1000);
   var res = [hrs, mins, secs].map(pad).join(":");
-  
+
   if (typeof parts != "undefined") {
     var parts = left % 1000
     res = res + "." + pad(parseInt(parts / 10));
   }
-  
+
   return res;
 }
 
 var Timer = Class.create({
-  initialize : function(element, id) {
+  initialize : function(element, id, start_time) {
     this.element = $(element);
     this.results = [];
     if (typeof id != "undefined") this.timer_id = id;
+    if (typeof start_time != "undefined") this.start_time = start_time;
   },
   updateTime : function() {
     var cur = new Date().getTime();
@@ -50,16 +51,17 @@ var Timer = Class.create({
     if (this.pe) return;
     if (typeof this.start_time == "undefined" || this.reseted) {
       this.start_time = new Date().getTime();
-      
+
       new Ajax.Request('/timers.json', {
         onSuccess: function(res) {
           var id = res.responseJSON['timer']['id'];
           this.timer_id = id;
+          window.history.replaceState({}, "", "/timers/" + id);
         }.bind(this),
-        method : 'POST', 
-        parameters : { 'timer[start_time]' : this.start_time }, 
+        method : 'POST',
+        parameters : { 'timer[start_time]' : this.start_time },
       });
-      
+
       this.reseted = false;
     }
     this.pe = new PeriodicalExecuter(this.updateTime.bind(this), 0.25);
@@ -80,16 +82,16 @@ var Timer = Class.create({
     //this.refreshResultList();
     var el = this.listElement(res);
     $('results').insert({ bottom : el.highlight() });
-              
+
     new Ajax.Request('/results.json', {
       onSuccess: function(res) {
         var id = res.responseJSON['result']['id'];
         el.writeAttribute('id', 'result_' + id);
         result['id'] = id;
       },
-      method : 'POST', 
+      method : 'POST',
       parameters : { 'result[result]' : res.toString(),
-                     'result[timer_id]' : this.timer_id}, 
+                     'result[timer_id]' : this.timer_id},
     });
   },
   //refreshResultList : function() {
@@ -115,11 +117,11 @@ var Timer = Class.create({
     }).map(function(res) {
       return res.id;
     });
-        
+
     if (!this.timer_id || !ids.any()) return;
-  
+
     // console.log("updating name for results " + ids);
-  
+
     new Ajax.Request('/timers/' + this.timer_id + '/results.json', {
       onSuccess: this.onSuccess.bind(this),
       method : 'GET',
@@ -132,24 +134,24 @@ var Timer = Class.create({
     res.responseJSON.each(function(result) {
       // console.log("adding name for " + result['result']);
       var name = result['result']['name'];
-      
+
       // console.log('name is ' + result['result']['name']);
-      
+
       if (name) {
         var id = result['result']['id'];
-        
+
         // console.log("id to update is " + id);
         // console.log("this.results: " + this.results);
         var curr_result = this.results.find(function(r) {
           return parseInt(r.id) == parseInt(id);
         });
-        
+
         // console.log('curr_result: ' + curr_result);
-        
+
         curr_result['name'] = name;
-        
+
         // console.log("now curr_result " + curr_result.id + " has name " + curr_result.name);
-        
+
         $('result_' + id).insert({bottom : " " + name}).highlight();
       }
     }.bind(this));
