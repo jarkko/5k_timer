@@ -34,7 +34,7 @@ var ResultListUpdater = Behavior.create({
         }.bind(this));
         
         if (new_results.size() > 0) {
-          $('result_' + new_results.first().id).down('input[type=text]').select();
+          //$('result_' + new_results.first().id).down('input[type=text]').select();
           //window.location = window.location.pathname + "#list_end";
           Event.addBehavior.reload();          
         }

@@ -9,7 +9,13 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20091119225152) do
+ActiveRecord::Schema.define(:version => 20140506144321) do
+
+  create_table "categories", :force => true do |t|
+    t.string   "name"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
 
   create_table "results", :force => true do |t|
     t.integer  "runner_id"
@@ -25,6 +31,7 @@ ActiveRecord::Schema.define(:version => 20091119225152) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.integer  "bib_number"
+    t.integer  "category_id"
   end
 
   add_index "runners", ["bib_number"], :name => "index_runners_on_bib_number", :unique => true
