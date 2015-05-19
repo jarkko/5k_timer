@@ -8,7 +8,7 @@ class ResultsController < ApplicationController
       return redirect_to timer_results_path(Timer.last)
     end
     
-    opts = {}
+    opts = {:order => "result asc"}
     
     if params[:result_ids]
       opts[:conditions] = {:id => params[:result_ids]}
