@@ -7,19 +7,19 @@ class ResultsController < ApplicationController
     else
       return redirect_to timer_results_path(Timer.last)
     end
-    
+
     opts = {:order => "result asc"}
-    
+
     if params[:result_ids]
       opts[:conditions] = {:id => params[:result_ids]}
     end
-    
+
     scope = @timer.results
-    
+
     if params[:min_id]
       scope = scope.newer_than(params[:min_id])
     end
-    
+
     @results = scope.find(:all, opts)
 
     respond_to do |format|
@@ -74,7 +74,7 @@ class ResultsController < ApplicationController
       if @result.save
         format.html do
           flash[:notice] = 'Result was successfully created.'
-          
+
           redirect_to(@result)
         end
         format.xml  { render :xml => @result, :status => :created, :location => @result }

@@ -32,6 +32,54 @@ var Timer = Class.create({
     this.results = [];
     if (typeof id != "undefined") this.timer_id = id;
     if (typeof start_time != "undefined") this.start_time = start_time;
+    if (this.timer_id) {
+      this.getResults();
+      this.updateNames();
+    }
+  },
+  getResults : function() {
+    if (this.updating) return;
+    this.updating = true;
+    new Ajax.Request('/timers/' + this.timer_id + "/results.json", {
+      method : 'GET',
+      onSuccess : function(resp) {
+        // console.log("resp.status: " + resp.status);
+        // console.log("resp.statusText: " + resp.statusText);
+        // console.log("resp.responseHeaders: " + resp);
+
+        var new_results = resp.responseJSON.map(function(res) {return res['result']});
+
+        // console.log("new results: " + new_results.size());
+
+        this.results = this.results.concat(new_results);
+
+        // console.log("this.results: " + this.results)
+
+        new_results.each(function(result) {
+          //console.log("inserting result ", result)
+          var new_el = this.listElement(result["result"]);
+          new_el.id = 'result_' + result.id;
+
+          if (result["name"]) {
+            new_el.insert({bottom : " " + result["name"]});
+          }
+          // console.log("new_el: " + new_el)
+          $('results').insert({
+            bottom: new_el
+          });
+        }.bind(this));
+
+        if (new_results.size() > 0) {
+          //$('result_' + new_results.first().id).down('input[type=text]').select();
+          //window.location = window.location.pathname + "#list_end";
+          Event.addBehavior.reload();
+        }
+        this.updating = false;
+      }.bind(this),
+      onFailure: function(resp) {
+        this.updating = false;
+      },
+    });
   },
   updateTime : function() {
     var cur = new Date().getTime();
@@ -57,6 +105,7 @@ var Timer = Class.create({
           var id = res.responseJSON['timer']['id'];
           this.timer_id = id;
           window.history.replaceState({}, "", "/timers/" + id);
+          this.getResults();
         }.bind(this),
         method : 'POST',
         parameters : { 'timer[start_time]' : this.start_time },
@@ -107,10 +156,12 @@ var Timer = Class.create({
     // console.log("starting updateNames");
     this.nameUpdater = new PeriodicalExecuter(
       this._updateNames.bind(this),
-      5
+      3
     );
   },
   _updateNames : function() {
+    if (this.updatingNames) return;
+    this.updatingNames = true;
     // console.log("updating names");
     var ids = this.results.select(function(e) {
       return e.id && !e.name;
@@ -124,6 +175,9 @@ var Timer = Class.create({
 
     new Ajax.Request('/timers/' + this.timer_id + '/results.json', {
       onSuccess: this.onSuccess.bind(this),
+      onFailure: function(resp) {
+        this.updatingNames = false;
+      },
       method : 'GET',
       parameters : { 'result_ids[]' : ids, 'with_names' : '1' }
     });
@@ -155,5 +209,6 @@ var Timer = Class.create({
         $('result_' + id).insert({bottom : " " + name}).highlight();
       }
     }.bind(this));
+    this.updatingNames = false;
   }
 });

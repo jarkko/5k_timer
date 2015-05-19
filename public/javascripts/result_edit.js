@@ -5,23 +5,26 @@ var ResultListUpdater = Behavior.create({
     this.results = [];
     this._updateList();
     this.listUpdater = new PeriodicalExecuter(this._updateList.bind(this), 3);
+    this.updating = false;
   },
   _updateList : function() {
+    if (this.updating) return;
+    this.updating = true;
     new Ajax.Request(window.location.pathname + ".json", {
       method : 'GET',
       onSuccess : function(resp) {
         // console.log("resp.status: " + resp.status);
         // console.log("resp.statusText: " + resp.statusText);
         // console.log("resp.responseHeaders: " + resp);
-        
+
         var new_results = resp.responseJSON.map(function(res) {return res['result']});
-        
+
         // console.log("new results: " + new_results.size());
-        
+
         this.results = this.results.concat(new_results);
-        
+
         // console.log("this.results: " + this.results)
-        
+
         new_results.each(function(result) {
           // console.log("inserting result " + result.id)
           // console.log("to " + this.element);
@@ -32,13 +35,17 @@ var ResultListUpdater = Behavior.create({
           });
           if (result.name) new_el.down('form').hide();
         }.bind(this));
-        
+
         if (new_results.size() > 0) {
           //$('result_' + new_results.first().id).down('input[type=text]').select();
           //window.location = window.location.pathname + "#list_end";
-          Event.addBehavior.reload();          
+          Event.addBehavior.reload();
         }
+        this.updating = false;
       }.bind(this),
+      onFailure: function(resp) {
+        this.updating = false;
+      },
       parameters : this._ajaxParameters()
     });
   },
@@ -59,7 +66,7 @@ var ResultListUpdater = Behavior.create({
         id : "edit_result_" + result.id,
         'class' : "edit_result"
         }, " ",
-        $input({'type' : 'text', 
+        $input({'type' : 'text',
                 id : "result_" + result.id + "_bib_number",
                 'size' : 3})
       ), " ",
@@ -83,11 +90,11 @@ Event.addBehavior({
   '#results form:submit' : function(event) {
     var li = event.element().up('li').next('li');
     if (li) {
-      li.down('input[type=text]').select();      
+      li.down('input[type=text]').select();
     } else {
       this.down('input[type=text]').blur();
     }
-    
+
     event.stop();
   },
   '#results input[type=text]:blur' : function(event) {
@@ -95,12 +102,12 @@ Event.addBehavior({
     var el = event.element();
     var form_el = el.up('form');
     var li_el = el.up('li');
-    
+
     //new Ajax.Updater(li_el.id, form_el.action, {
     //  method : 'PUT',
     //  parameters : { 'result[bib_number]' : $F(this) }
     //});
-    
+
     new Ajax.Request(form_el.action, {
       method : 'PUT',
       onSuccess : function(resp) {
