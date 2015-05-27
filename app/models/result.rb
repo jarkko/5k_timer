@@ -29,12 +29,13 @@ class Result < ActiveRecord::Base
   end
   
   def bib_number
-    runner ? runner.bib_number : nil
+    runner ? runner.bib_number : read_attribute(:bib_number)
   end
   
   def bib_number=(num)
     runner = Runner.find_by_bib_number(num)
     self.runner = runner if runner
+    write_attribute(:bib_number, num)
     save
   end
     
