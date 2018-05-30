@@ -1,0 +1,12 @@
+module JsonImporter
+  def self.import_runners(json)
+    parsed = JSON.parse(json)
+    parsed.each do |p|
+      if r = Runner.find_by_bib_number(p["bib_number"])
+        r.update_attributes!(p)
+      else
+        Runner.create!(p)
+      end
+    end
+  end
+end

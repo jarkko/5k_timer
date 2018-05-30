@@ -71,7 +71,8 @@ var ResultListUpdater = Behavior.create({
                 'size' : 3})
       ), " ",
       $span({'class' : 'bib_number'}, result.bib_number ? result.bib_number.toString() : ""), " ",
-      $span({'class' : 'bib_number'}, result.name || "")
+      $span({'class' : 'bib_number'}, result.name || ""), " ",
+      $span({'class' : 'bib_number'}, result.category_name || "")
     );
     //// console.log("el is " + el);
     return el;

@@ -19,10 +19,10 @@ ActiveRecord::Schema.define(:version => 20150526133146) do
 
   create_table "results", :force => true do |t|
     t.integer  "runner_id"
-    t.integer  "result"
+    t.integer  "result",     :limit => 8
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.integer  "timer_id",   :default => 1, :null => false
+    t.integer  "timer_id",                :default => 1, :null => false
     t.string   "bib_number"
   end
 
@@ -38,7 +38,7 @@ ActiveRecord::Schema.define(:version => 20150526133146) do
   add_index "runners", ["bib_number"], :name => "index_runners_on_bib_number", :unique => true
 
   create_table "timers", :force => true do |t|
-    t.integer  "start_time"
+    t.integer  "start_time", :limit => 8
     t.datetime "created_at"
     t.datetime "updated_at"
   end

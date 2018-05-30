@@ -63,6 +63,9 @@ var Timer = Class.create({
           if (result["name"]) {
             new_el.insert({bottom : " " + result["name"]});
           }
+          if (result["category_name"]) {
+            new_el.insert({bottom : " " + result["category_name"]});
+          }
           // console.log("new_el: " + new_el)
           $('results').insert({
             bottom: new_el
@@ -113,7 +116,7 @@ var Timer = Class.create({
 
       this.reseted = false;
     }
-    this.pe = new PeriodicalExecuter(this.updateTime.bind(this), 0.25);
+    this.pe = new PeriodicalExecuter(this.updateTime.bind(this), 1);
     this.updateNames();
   },
   stop : function() {
@@ -183,8 +186,8 @@ var Timer = Class.create({
     });
   },
   onSuccess : function(res) {
-    // console.log("response is " + res.responseJSON);
-    // console.log("in onSuccess, this is " + Object.inspect(this));
+    console.log("response is " + res.responseJSON);
+    console.log("in onSuccess, this is " + Object.inspect(this));
     res.responseJSON.each(function(result) {
       // console.log("adding name for " + result['result']);
       var name = result['result']['name'];

@@ -24,7 +24,7 @@ class ResultsController < ApplicationController
 
     if params[:category_id]
       @category = Category.find(params[:category_id])
-      @results = res.reject!{|r| r.runner && r.runner.category_id != @category.id }
+      @results = res.reject!{|r| r.runner.category_id != @category.id }
     else
       @results = res
     end
@@ -36,7 +36,7 @@ class ResultsController < ApplicationController
         if params[:with_names]
           @results = @results.select{ |res| res.name.present? }
         end
-        render :json => @results.to_json(:methods => [:name, :bib_number, :category_name])
+        render :json => @results.to_json(:methods => [:name, :bib_number])
       end
       format.js do
         render :partial => @results
@@ -52,7 +52,7 @@ class ResultsController < ApplicationController
     respond_to do |format|
       format.html # show.html.erb
       format.xml  { render :xml => @result }
-      format.json { render :json => @result.to_json(:methods => [:name, :category_name, :category_position]) }
+      format.json { render :json => @result.to_json(:methods => :name) }
     end
   end
 
