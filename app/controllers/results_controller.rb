@@ -1,4 +1,6 @@
 class ResultsController < ApplicationController
+  skip_before_action :verify_authenticity_token
+
   # GET /results
   # GET /results.xml
   def index
@@ -8,25 +10,20 @@ class ResultsController < ApplicationController
       return redirect_to timer_results_path(Timer.last)
     end
 
-    opts = {:order => "result asc", :conditions => {}}
+    scope = @timer.results.order("result asc")
 
     if params[:result_ids]
-      opts[:conditions][:id] = params[:result_ids]
+      scope = scope.where(id: params[:result_ids])
     end
-
-    scope = @timer.results
 
     if params[:min_id]
       scope = scope.newer_than(params[:min_id])
     end
 
-    res = scope.find(:all, opts)
-
     if params[:category_id]
-      @category = Category.find(params[:category_id])
-      @results = res.reject!{|r| r.runner && r.runner.category_id != @category.id }
+      @results = scope.in_category(params[:category_id])
     else
-      @results = res
+      @results = scope
     end
 
     respond_to do |format|
@@ -75,7 +72,7 @@ class ResultsController < ApplicationController
   # POST /results
   # POST /results.xml
   def create
-    @result = Result.new(params[:result])
+    @result = Result.new(result_params)
 
     respond_to do |format|
       if @result.save
@@ -89,6 +86,7 @@ class ResultsController < ApplicationController
       else
         format.html { render :action => "new" }
         format.xml  { render :xml => @result.errors, :status => :unprocessable_entity }
+        format.json  { render :json => @result.errors, :status => :unprocessable_entity }
       end
     end
   end
@@ -99,8 +97,9 @@ class ResultsController < ApplicationController
     @result = Result.find(params[:id])
 
     respond_to do |format|
-      if @result.update_attributes(params[:result])
+      if @result.update_attributes(result_params)
         format.js { render :partial => @result }
+        format.json { render :json => @result.to_json(:methods => [:name, :bib_number, :category_name]) }
       else
         format.html { render :action => "edit" }
         format.xml  { render :xml => @result.errors, :status => :unprocessable_entity }
@@ -118,5 +117,11 @@ class ResultsController < ApplicationController
       format.html { redirect_to(results_url) }
       format.xml  { head :ok }
     end
+  end
+
+  private
+
+  def result_params
+    params.require(:result).permit(:result, :timer_id, :bib_number)
   end
 end

@@ -13,11 +13,11 @@ var ResultListUpdater = Behavior.create({
     new Ajax.Request(window.location.pathname + ".json", {
       method : 'GET',
       onSuccess : function(resp) {
-        // console.log("resp.status: " + resp.status);
-        // console.log("resp.statusText: " + resp.statusText);
-        // console.log("resp.responseHeaders: " + resp);
+        console.log("resp.status: ", resp.status);
+        console.log("resp.statusText: ", resp.statusText);
+        console.log("resp.responseHeaders: ", resp);
 
-        var new_results = resp.responseJSON.map(function(res) {return res['result']});
+        var new_results = resp.responseJSON.map(function(res) {return res});
 
         // console.log("new results: " + new_results.size());
 
@@ -26,8 +26,8 @@ var ResultListUpdater = Behavior.create({
         // console.log("this.results: " + this.results)
 
         new_results.each(function(result) {
-          // console.log("inserting result " + result.id)
-          // console.log("to " + this.element);
+          console.log("inserting result ", result.id)
+          console.log("to ", this.element);
           var new_el = this._listElement(result);
           // console.log("new_el: " + new_el)
           this.element.insert({
@@ -50,16 +50,16 @@ var ResultListUpdater = Behavior.create({
     });
   },
   _ajaxParameters : function() {
-    // console.log("in ajaxParameters, this.results is " + this.results)
+    console.log("in ajaxParameters, this.results is " + this.results)
     if (this.results.any()) {
-      return { 'min_id' : this.results.last().id }
+      return { 'min_id' : this.results.map(function(res) { return res.id }).sort().last() }
     } else {
       return {}
     }
   },
   _listElement : function(result) {
     // console.log("in listELement, result is " + $H(result).inspect())
-    var el = $li({id: 'result_' + result.id},
+    var el = $li({id: 'result_' + result.id, title: result.id},
       $span({'class' : 'time'}, parseTime(result.result, true)),
       $form({
         action : window.location.pathname + "/" + result.id,
@@ -68,6 +68,7 @@ var ResultListUpdater = Behavior.create({
         }, " ",
         $input({'type' : 'text',
                 id : "result_" + result.id + "_bib_number",
+                value: result.bib_number ? result.bib_number.toString() : "",
                 'size' : 3})
       ), " ",
       $span({'class' : 'bib_number'}, result.bib_number ? result.bib_number.toString() : ""), " ",
@@ -99,6 +100,7 @@ Event.addBehavior({
     event.stop();
   },
   '#results input[type=text]:blur' : function(event) {
+    if ($F(this).trim().empty()) return;
     event.stop();
     var el = event.element();
     var form_el = el.up('form');
@@ -109,10 +111,10 @@ Event.addBehavior({
     //  parameters : { 'result[bib_number]' : $F(this) }
     //});
 
-    new Ajax.Request(form_el.action, {
+    new Ajax.Request(form_el.action + '.json', {
       method : 'PUT',
       onSuccess : function(resp) {
-        li_el.insert({ before : resp.responseText }).remove();
+        li_el.insert({ before : listElement(resp.responseJSON) }).remove();
         $(li_el.id).highlight();
         Event.addBehavior.reload();
       },
@@ -127,3 +129,25 @@ Event.addBehavior({
     }
   })
 });
+
+var listElement = function(result) {
+  // console.log("in listELement, result is " + $H(result).inspect())
+  var el = $li({id: 'result_' + result.id, title: result.id},
+    $span({'class' : 'time'}, parseTime(result.result, true)),
+    $form({
+      action : window.location.pathname + "/" + result.id,
+      id : "edit_result_" + result.id,
+      'class' : "edit_result"
+      }, " ",
+      $input({'type' : 'text',
+              id : "result_" + result.id + "_bib_number",
+              value: result.bib_number ? result.bib_number.toString() : "",
+              'size' : 3})
+    ).hide(), " ",
+    $span({'class' : 'bib_number'}, result.bib_number ? result.bib_number.toString() : ""), " ",
+    $span({'class' : 'bib_number'}, result.name || ""), " ",
+    $span({'class' : 'bib_number'}, result.category_name || "")
+  );
+  //// console.log("el is " + el);
+  return el;
+}

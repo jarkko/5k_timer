@@ -18,6 +18,6 @@ class Runner < ActiveRecord::Base
   end
 
   def category_name=(name)
-    self.category = Category.find_or_create_by_name(name)
+    self.category = Category.find_or_create_by(name: name)
   end
 end

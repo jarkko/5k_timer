@@ -1,4 +1,6 @@
 class TimersController < ApplicationController
+  skip_before_action :verify_authenticity_token
+
   # GET /timers
   # GET /timers.xml
   def index
@@ -37,7 +39,7 @@ class TimersController < ApplicationController
   # POST /timers
   # POST /timers.xml
   def create
-    @timer = Timer.new(params[:timer])
+    @timer = Timer.new(timer_params)
 
     respond_to do |format|
       if @timer.save
@@ -81,5 +83,11 @@ class TimersController < ApplicationController
       format.html { redirect_to(timers_url) }
       format.xml  { head :ok }
     end
+  end
+
+  private
+
+  def timer_params
+    params.require(:timer).permit(:start_time)
   end
 end

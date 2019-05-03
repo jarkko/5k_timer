@@ -1,17 +1,17 @@
 class Result < ActiveRecord::Base
-  belongs_to :runner
+  belongs_to :runner, optional: true
   belongs_to :timer
 
-  named_scope :newer_than, lambda {|id|
-    {:conditions => ['id > ?', id]}
+  scope :newer_than, lambda {|id|
+    where("id > ?", id)
   }
 
-  named_scope :better_than, lambda {|id|
-    {:conditions => ['id < ?', id]}
+  scope :better_than, lambda {|id|
+    where("id < ?", id)
   }
 
-  named_scope :in_category, lambda {|id|
-    {:conditions => ['runners.category_id = ?', id]}
+  scope :in_category, lambda {|id|
+    where(runner: {category_id: id})
   }
 
   def name
@@ -52,7 +52,7 @@ class Result < ActiveRecord::Base
   end
 
   def connect_by_bib
-    runner = Runner.find_by_bib_number(bib_number)
+    runner = Runner.find_by(bib_number: bib_number)
     self.runner = runner if runner
     save
   end

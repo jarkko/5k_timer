@@ -43,22 +43,21 @@ var Timer = Class.create({
     new Ajax.Request('/timers/' + this.timer_id + "/results.json", {
       method : 'GET',
       onSuccess : function(resp) {
-        // console.log("resp.status: " + resp.status);
-        // console.log("resp.statusText: " + resp.statusText);
-        // console.log("resp.responseHeaders: " + resp);
+        var new_results = resp.responseJSON;
 
-        var new_results = resp.responseJSON.map(function(res) {return res['result']});
-
-        // console.log("new results: " + new_results.size());
+        // console.log("new results: ", new_results.size());
 
         this.results = this.results.concat(new_results);
 
-        // console.log("this.results: " + this.results)
+        // console.log("this.results: ", this.results)
 
         new_results.each(function(result) {
-          //console.log("inserting result ", result)
-          var new_el = this.listElement(result["result"]);
+          var new_el = this.listElement(result);
           new_el.id = 'result_' + result.id;
+
+          if (result["bib_number"]) {
+            new_el.insert({bottom : " " + result["bib_number"]});
+          }
 
           if (result["name"]) {
             new_el.insert({bottom : " " + result["name"]});
@@ -66,7 +65,6 @@ var Timer = Class.create({
           if (result["category_name"]) {
             new_el.insert({bottom : " " + result["category_name"]});
           }
-          // console.log("new_el: " + new_el)
           $('results').insert({
             bottom: new_el
           });
@@ -129,16 +127,17 @@ var Timer = Class.create({
   storeResult : function() {
     if (typeof this.start_time == "undefined" || this.reseted) return false;
     var res = this.getTimeDiff(new Date().getTime());
-    var result = {'res': res}
+    var result = {'result': res}
     this.results.push(result);
     //this.refreshResultList();
-    var el = this.listElement(res);
+    var el = this.listElement(result);
     $('results').insert({ bottom : el.highlight() });
 
     new Ajax.Request('/results.json', {
       onSuccess: function(res) {
-        var id = res.responseJSON['result']['id'];
+        var id = res.responseJSON['id'];
         el.writeAttribute('id', 'result_' + id);
+        el.writeAttribute('title', id);
         result['id'] = id;
       },
       method : 'POST',
@@ -152,11 +151,13 @@ var Timer = Class.create({
   //    $('results').insert({ bottom : this.listElement(res) });
   //  }.bind(this));
   //},
-  listElement : function(str) {
-    return new Element('li').update(parseTime(str, true));
+  listElement : function(result) {
+    return $li({id: 'result_' + result.id, title: result.id},
+      $span({'class' : 'time'}, parseTime(result.result, true)));
   },
   updateNames : function() {
-    // console.log("starting updateNames");
+    if (typeof this.nameUpdater != "undefined") return;
+    console.log("starting updateNames");
     this.nameUpdater = new PeriodicalExecuter(
       this._updateNames.bind(this),
       3
@@ -165,20 +166,25 @@ var Timer = Class.create({
   _updateNames : function() {
     if (this.updatingNames) return;
     this.updatingNames = true;
-    // console.log("updating names");
+    console.log("updating names");
     var ids = this.results.select(function(e) {
       return e.id && !e.name;
     }).map(function(res) {
       return res.id;
     });
 
-    if (!this.timer_id || !ids.any()) return;
+    if (!this.timer_id || !ids.any()) {
+      console.log("nothing to update")
+      this.updatingNames = false;
+      return
+    }
 
     // console.log("updating name for results " + ids);
 
     new Ajax.Request('/timers/' + this.timer_id + '/results.json', {
       onSuccess: this.onSuccess.bind(this),
       onFailure: function(resp) {
+        console.log("FAIL", resp)
         this.updatingNames = false;
       },
       method : 'GET',
@@ -186,16 +192,16 @@ var Timer = Class.create({
     });
   },
   onSuccess : function(res) {
-    console.log("response is " + res.responseJSON);
-    console.log("in onSuccess, this is " + Object.inspect(this));
+    console.log("response is ", res.responseJSON);
+    console.log("in onSuccess, this is ", Object.inspect(this));
     res.responseJSON.each(function(result) {
       // console.log("adding name for " + result['result']);
-      var name = result['result']['name'];
+      var name = result['name'];
 
       // console.log('name is ' + result['result']['name']);
 
       if (name) {
-        var id = result['result']['id'];
+        var id = result['id'];
 
         // console.log("id to update is " + id);
         // console.log("this.results: " + this.results);
@@ -208,8 +214,13 @@ var Timer = Class.create({
         curr_result['name'] = name;
 
         // console.log("now curr_result " + curr_result.id + " has name " + curr_result.name);
-
-        $('result_' + id).insert({bottom : " " + name}).highlight();
+        var new_el = $('result_' + id);
+        new_el.insert({bottom : " " + result['bib_number']})
+        new_el.insert({bottom : " " + name})
+        if (result["category_name"]) {
+          new_el.insert({bottom : " " + result["category_name"]});
+        }
+        new_el.highlight();
       }
     }.bind(this));
     this.updatingNames = false;

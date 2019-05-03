@@ -2,6 +2,7 @@
         "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
   <head>
+    <%= csrf_meta_tag %>
     <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
     <title>rubyconf5k</title>
     <style type="text/css" media="all">
@@ -14,25 +15,25 @@
         font-size: 13px;
         color: #333;
       }
-      
+
       h1 {
         font-size: 28px;
         color: #000;
       }
-      
+
       a  {color: #03c}
       a:hover {
         background-color: #03c;
         color: white;
         text-decoration: none;
       }
-      
-      
+
+
       #page {
         background-color: #f0f0f0;
         margin: 0;
       }
-      
+
       #content {
         float: left;
         margin-left: 117px;
@@ -43,7 +44,7 @@
         padding-top: 130px;
         width: 500px;
       }
-      
+
       #sidebar {
         position: fixed;
         top: 0;
@@ -54,7 +55,7 @@
       #footer {
         clear: both;
       }
-      
+
 
       #header, #about, #getting-started {
         padding-left: 75px;
@@ -74,14 +75,14 @@
         font-weight: normal;
         font-size: 16px;
       }
-      
-      
+
+
       #about h3 {
         margin: 0;
         margin-bottom: 10px;
         font-size: 14px;
       }
-      
+
       #about-content {
         background-color: #ffd;
         border: 1px solid #fc0;
@@ -100,7 +101,7 @@
       }
       #about-content td.name  {color: #555}
       #about-content td.value {color: #000}
-      
+
       #about-content.failure {
         background-color: #fcc;
         border: 1px solid #f00;
@@ -109,8 +110,8 @@
         margin: 0;
         padding: 10px;
       }
-      
-      
+
+
       #getting-started {
         border-top: 1px solid #ccc;
         margin-top: 25px;
@@ -146,8 +147,8 @@
         color: #555;
         font-size: 13px;
       }
-      
-      
+
+
       #search {
         margin: 0;
         padding-top: 10px;
@@ -159,8 +160,8 @@
         margin: 2px;
       }
       #search-text {width: 170px}
-      
-      
+
+
       #sidebar ul {
         margin-left: 0;
         padding-left: 0;
@@ -177,7 +178,7 @@
       #sidebar ul.links li {
         margin-bottom: 5px;
       }
-      
+
       #tagline {
         position: fixed;
         top: 0;
@@ -187,7 +188,7 @@
         font-family: "Bank Gothic";
         color: #FF4903;
       }
-      
+
       #timer {
         font-size: 96px;
         position: fixed;
@@ -199,17 +200,17 @@
         font-family: "Bank Gothic";
         opacity: 0.75;
       }
-      
+
       #results li {
         margin-bottom: 0.5em;
         font-family: "Bank Gothic";
         font-size: 18px;
       }
-      
+
       #results form {
         display: inline;
       }
-      
+
       .button {
         display: block;
         padding: 10px;
@@ -220,7 +221,7 @@
         font-size: 200%;
       }
     </style>
-    
+
     <%= javascript_include_tag 'prototype', 'effects', 'lowpro', :cache => true %>
 
     <%= javascript_include_tag 'timer' %>
@@ -229,7 +230,7 @@
   </head>
   <body>
     <div id="page">
-      
+
       <%= yield %>
 
       <div id="footer">&nbsp;</div>
