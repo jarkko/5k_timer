@@ -103,7 +103,7 @@ var Timer = Class.create({
 
       new Ajax.Request('/timers.json', {
         onSuccess: function(res) {
-          var id = res.responseJSON['timer']['id'];
+          var id = res.responseJSON['id'];
           this.timer_id = id;
           window.history.replaceState({}, "", "/timers/" + id);
           this.getResults();
