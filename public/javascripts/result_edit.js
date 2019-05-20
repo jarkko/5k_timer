@@ -52,7 +52,7 @@ var ResultListUpdater = Behavior.create({
   _ajaxParameters : function() {
     console.log("in ajaxParameters, this.results is " + this.results)
     if (this.results.any()) {
-      return { 'min_id' : this.results.map(function(res) { return res.id }).sort().last() }
+      return { 'min_id' : this.results.map(function(res) { return res.id }).sort(function(a,b) {return a>b;}).last() }
     } else {
       return {}
     }
