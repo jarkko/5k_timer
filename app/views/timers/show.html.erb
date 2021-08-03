@@ -1,13 +1,13 @@
 <script type="text/javascript">
   document.observe("dom:loaded", function(e) {
     timer = new Timer('timer', <%= @timer.id %>, '<%= @timer.start_time %>');
-    timer.start()
+    timer.start();
     $('start_timer').observe('click', function(e) { this.start(); e.stop(); }.bind(timer));
     //$('stop_timer').observe('click', function(e) { this.stop(); e.stop(); }.bind(timer));
     $('reset_timer').observe('click', function(e) { this.reset(); e.stop(); }.bind(timer));
     $('store_result').observe('click', timer.storeResult.bind(timer));
     document.observe('keyup', function(e) {
-      if (e.keyCode == "13") { // enter hit
+      if (e.keyCode == "13" || e.keyCode == "32") { // enter hit
         this.storeResult();
         window.location = window.location.pathname + "#list_end";
       }

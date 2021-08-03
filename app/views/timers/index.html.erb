@@ -6,7 +6,7 @@
     $('reset_timer').observe('click', function(e) { this.reset(); e.stop(); }.bind(timer));
     $('store_result').observe('click', timer.storeResult.bind(timer));
     document.observe('keyup', function(e) {
-      if (e.keyCode == "13") { // enter hit
+      if (e.keyCode == "13" || e.keyCode == "32") { // enter hit or space
         this.storeResult();
         window.location = window.location.pathname + "#list_end";
       }

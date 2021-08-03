@@ -26,6 +26,25 @@ function parseTime(time_diff, parts) {
   return res;
 }
 
+function retryStoreResult(tries, el, result, res, timer_id) {
+  new Ajax.Request('/results.json', {
+    onSuccess: function(res) {
+      var id = res.responseJSON['id'];
+      el.writeAttribute('id', 'result_' + id);
+      el.writeAttribute('title', id);
+      result['id'] = id;
+    },
+    onFailure: function(e) {
+      //console.error(e);
+      console.log("retrying",tries);
+      retryStoreResult(tries-1, el, result, res, timer_id);
+    },
+    method : 'POST',
+    parameters : { 'result[result]' : res.toString(),
+                   'result[timer_id]' : timer_id},
+  });
+}
+
 var Timer = Class.create({
   initialize : function(element, id, start_time) {
     this.element = $(element);
@@ -65,9 +84,29 @@ var Timer = Class.create({
           if (result["category_name"]) {
             new_el.insert({bottom : " " + result["category_name"]});
           }
+
+          let results = $('results');
+          let added = false;
+          for (let i = 0; i < results.length; i++) {
+            let el = results[i];
+             // get the time of the element
+             if (new_el.dataset.time < el.dataset.time) {
+              el.insertAdjacentElement('beforebegin', new_el);
+              added = true;
+              break;
+            }
+          }
+          
+          if (!added) {
+            $('results').insert({
+              bottom: new_el
+            });
+          }
+          /*
           $('results').insert({
             bottom: new_el
           });
+          */
         }.bind(this));
 
         if (new_results.size() > 0) {
@@ -133,6 +172,9 @@ var Timer = Class.create({
     var el = this.listElement(result);
     $('results').insert({ bottom : el.highlight() });
 
+    retryStoreResult(3, el, result, res, this.timer_id);
+
+    /*
     new Ajax.Request('/results.json', {
       onSuccess: function(res) {
         var id = res.responseJSON['id'];
@@ -140,10 +182,14 @@ var Timer = Class.create({
         el.writeAttribute('title', id);
         result['id'] = id;
       },
+      onFailure: function(e) {
+        console.error(e);
+        console.log("ajax fail");
+      },
       method : 'POST',
       parameters : { 'result[result]' : res.toString(),
                      'result[timer_id]' : this.timer_id},
-    });
+    });*/
   },
   //refreshResultList : function() {
   //  $('results').innerHTML = '';
@@ -152,8 +198,10 @@ var Timer = Class.create({
   //  }.bind(this));
   //},
   listElement : function(result) {
-    return $li({id: 'result_' + result.id, title: result.id},
+    let li = $li({id: 'result_' + result.id, title: result.id},
       $span({'class' : 'time'}, parseTime(result.result, true)));
+    li.dataset.time = result.result;
+    return li;
   },
   updateNames : function() {
     if (typeof this.nameUpdater != "undefined") return;

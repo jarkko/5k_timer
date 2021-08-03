@@ -30,10 +30,37 @@ var ResultListUpdater = Behavior.create({
           console.log("to ", this.element);
           var new_el = this._listElement(result);
           // console.log("new_el: " + new_el)
+          /*
+          let results = $('results');
+          let added = false;
+          for (let i = 0; i < results.length; i++) {
+            let el = results[i];
+             // get the time of the element
+             if (new_el.dataset.time < el.dataset.time) {
+              el.insertAdjacentElement('beforebegin', new_el);
+              added = true;
+              break;
+            }
+          }
+          
+          if (!added) {
+            this.element.insert({
+              bottom: new_el
+            });
+          }
+          */
+
           this.element.insert({
             bottom: new_el
           });
+ 
           if (result.name) new_el.down('form').hide();
+
+          var list = document.querySelector('#results');
+
+          [...list.children]
+            .sort((a,b)=>parseInt(a.dataset.time)>parseInt(b.dataset.time)?1:-1)
+            .forEach(node=>list.appendChild(node));
         }.bind(this));
 
         if (new_results.size() > 0) {
@@ -75,6 +102,8 @@ var ResultListUpdater = Behavior.create({
       $span({'class' : 'bib_number'}, result.name || ""), " ",
       $span({'class' : 'bib_number'}, result.category_name || "")
     );
+
+    el.dataset.time = result.result;
     //// console.log("el is " + el);
     return el;
   }
@@ -148,6 +177,8 @@ var listElement = function(result) {
     $span({'class' : 'bib_number'}, result.name || ""), " ",
     $span({'class' : 'bib_number'}, result.category_name || "")
   );
+
+  el.dataset.time = result.result;
   //// console.log("el is " + el);
   return el;
 }
