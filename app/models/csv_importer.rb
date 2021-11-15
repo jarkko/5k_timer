@@ -10,7 +10,7 @@ module CsvImporter
       category = Category.find_by_name(row[6].strip)
       attributes = {:bib_number => number, :first_name => first, :last_name => last, :category => category}
       if runner = Runner.find_by_bib_number(number)
-        runner.update_attributes!(attributes)
+        runner.update!(attributes)
       else
         Runner.create!(attributes)
       end

@@ -99,7 +99,7 @@ class ResultsController < ApplicationController
     @result = Result.find(params[:id])
 
     respond_to do |format|
-      if @result.update_attributes(params[:result])
+      if @result.update(params[:result])
         format.js { render :partial => @result }
       else
         format.html { render :action => "edit" }

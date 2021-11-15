@@ -75,18 +75,18 @@ describe TimersController do
     describe "with valid params" do
       it "updates the requested timer" do
         Timer.should_receive(:find).with("37").and_return(mock_timer)
-        mock_timer.should_receive(:update_attributes).with({'these' => 'params'})
+        mock_timer.should_receive(:update).with({'these' => 'params'})
         put :update, :id => "37", :timer => {:these => 'params'}
       end
 
       it "assigns the requested timer as @timer" do
-        Timer.stub!(:find).and_return(mock_timer(:update_attributes => true))
+        Timer.stub!(:find).and_return(mock_timer(:update => true))
         put :update, :id => "1"
         assigns[:timer].should equal(mock_timer)
       end
 
       it "redirects to the timer" do
-        Timer.stub!(:find).and_return(mock_timer(:update_attributes => true))
+        Timer.stub!(:find).and_return(mock_timer(:update => true))
         put :update, :id => "1"
         response.should redirect_to(timer_url(mock_timer))
       end
@@ -95,18 +95,18 @@ describe TimersController do
     describe "with invalid params" do
       it "updates the requested timer" do
         Timer.should_receive(:find).with("37").and_return(mock_timer)
-        mock_timer.should_receive(:update_attributes).with({'these' => 'params'})
+        mock_timer.should_receive(:update).with({'these' => 'params'})
         put :update, :id => "37", :timer => {:these => 'params'}
       end
 
       it "assigns the timer as @timer" do
-        Timer.stub!(:find).and_return(mock_timer(:update_attributes => false))
+        Timer.stub!(:find).and_return(mock_timer(:update => false))
         put :update, :id => "1"
         assigns[:timer].should equal(mock_timer)
       end
 
       it "re-renders the 'edit' template" do
-        Timer.stub!(:find).and_return(mock_timer(:update_attributes => false))
+        Timer.stub!(:find).and_return(mock_timer(:update => false))
         put :update, :id => "1"
         response.should render_template('edit')
       end

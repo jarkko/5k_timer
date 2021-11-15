@@ -97,7 +97,7 @@ class ResultsController < ApplicationController
     @result = Result.find(params[:id])
 
     respond_to do |format|
-      if @result.update_attributes(result_params)
+      if @result.update(result_params)
         format.js { render :partial => @result }
         format.json { render :json => @result.to_json(:methods => [:name, :bib_number, :category_name]) }
       else

@@ -3,7 +3,7 @@ module JsonImporter
     parsed = JSON.parse(json)
     parsed.each do |p|
       if r = Runner.find_by_bib_number(p["bib_number"])
-        r.update_attributes!(p)
+        r.update!(p)
       else
         Runner.create!(p)
       end

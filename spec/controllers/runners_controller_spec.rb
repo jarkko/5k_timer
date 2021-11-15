@@ -75,18 +75,18 @@ describe RunnersController do
     describe "with valid params" do
       it "updates the requested runner" do
         Runner.should_receive(:find).with("37").and_return(mock_runner)
-        mock_runner.should_receive(:update_attributes).with({'these' => 'params'})
+        mock_runner.should_receive(:update).with({'these' => 'params'})
         put :update, :id => "37", :runner => {:these => 'params'}
       end
 
       it "assigns the requested runner as @runner" do
-        Runner.stub!(:find).and_return(mock_runner(:update_attributes => true))
+        Runner.stub!(:find).and_return(mock_runner(:update => true))
         put :update, :id => "1"
         assigns[:runner].should equal(mock_runner)
       end
 
       it "redirects to the runner" do
-        Runner.stub!(:find).and_return(mock_runner(:update_attributes => true))
+        Runner.stub!(:find).and_return(mock_runner(:update => true))
         put :update, :id => "1"
         response.should redirect_to(runner_url(mock_runner))
       end
@@ -95,18 +95,18 @@ describe RunnersController do
     describe "with invalid params" do
       it "updates the requested runner" do
         Runner.should_receive(:find).with("37").and_return(mock_runner)
-        mock_runner.should_receive(:update_attributes).with({'these' => 'params'})
+        mock_runner.should_receive(:update).with({'these' => 'params'})
         put :update, :id => "37", :runner => {:these => 'params'}
       end
 
       it "assigns the runner as @runner" do
-        Runner.stub!(:find).and_return(mock_runner(:update_attributes => false))
+        Runner.stub!(:find).and_return(mock_runner(:update => false))
         put :update, :id => "1"
         assigns[:runner].should equal(mock_runner)
       end
 
       it "re-renders the 'edit' template" do
-        Runner.stub!(:find).and_return(mock_runner(:update_attributes => false))
+        Runner.stub!(:find).and_return(mock_runner(:update => false))
         put :update, :id => "1"
         response.should render_template('edit')
       end

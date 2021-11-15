@@ -62,7 +62,7 @@ class TimersController < ApplicationController
     @timer = Timer.find(params[:id])
 
     respond_to do |format|
-      if @timer.update_attributes(params[:timer])
+      if @timer.update(params[:timer])
         flash[:notice] = 'Timer was successfully updated.'
         format.html { redirect_to(@timer) }
         format.xml  { head :ok }
